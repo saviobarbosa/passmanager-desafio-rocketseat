@@ -15,6 +15,7 @@ import {
   HeaderTitle,
   Form
 } from './styles';
+import { useNavigation } from '@react-navigation/native';
 
 interface FormData {
   title: string;
@@ -36,15 +37,32 @@ export function RegisterLoginData() {
     formState: {
       errors
     }
-  } = useForm();
+  } = useForm({
+    resolver: yupResolver(schema)
+  });
+
+  const navigation = useNavigation();
 
   async function handleRegister(formData: FormData) {
-    const newLoginData = {
-      id: String(uuid.v4()),
-      ...formData
-    }
+    try {
+      const newLoginData = {
+        id: String(uuid.v4()),
+        ...formData
+      }
 
-    // Save data on AsyncStorage
+      const data = await AsyncStorage.getItem("@passmanager:logins");
+      const currentData = data ? JSON.parse(data) : [];
+
+      const dataFormatted = [...currentData, newLoginData];
+  
+      await AsyncStorage.setItem("@passmanager:logins", JSON.stringify(dataFormatted));
+  
+      reset();
+      navigation.navigate("Home");
+    } catch(error) {
+      console.log(error);
+      Alert.alert("Não foi possivel salvar.")
+    }
   }
 
   return (
@@ -61,7 +79,7 @@ export function RegisterLoginData() {
             title="Título"
             name="title"
             error={
-              // message error here
+              errors.title && errors.title.message
             }
             control={control}
             placeholder="Escreva o título aqui"
@@ -72,7 +90,7 @@ export function RegisterLoginData() {
             title="Email"
             name="email"
             error={
-              // message error here
+              errors.email && errors.email.message
             }
             control={control}
             placeholder="Escreva o Email aqui"
@@ -84,7 +102,7 @@ export function RegisterLoginData() {
             title="Senha"
             name="password"
             error={
-              // message error here
+              errors.password && errors.password.message
             }
             control={control}
             secureTextEntry
