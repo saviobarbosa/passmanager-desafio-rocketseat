@@ -15,7 +15,7 @@ import {
   HeaderTitle,
   Form
 } from './styles';
-import { useNavigation } from '@react-navigation/native';
+// import { useNavigation } from '@react-navigation/native';
 
 interface FormData {
   title: string;
@@ -41,7 +41,7 @@ export function RegisterLoginData() {
     resolver: yupResolver(schema)
   });
 
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   async function handleRegister(formData: FormData) {
     try {
@@ -58,10 +58,10 @@ export function RegisterLoginData() {
       await AsyncStorage.setItem("@passmanager:logins", JSON.stringify(dataFormatted));
   
       reset();
-      navigation.navigate("Home");
+      // navigation.navigate("Home");
     } catch(error) {
       console.log(error);
-      Alert.alert("Não foi possivel salvar.")
+      Alert.alert("Não foi possivel salvar.");
     }
   }
 
